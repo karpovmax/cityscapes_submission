@@ -1,12 +1,11 @@
+#!/usr/bin/python3
 from __future__ import print_function, absolute_import, division
 import os, glob, sys
 from skimage.io import imread, imshow, imsave
 from skimage import data, color
 from skimage.transform import rescale, resize, downscale_local_mean
 import numpy as np
-import cityscapesscripts
 import matplotlib.pyplot as plt
-
 
 
 def getData(num_tests, start, type):
@@ -94,10 +93,6 @@ def importBatch(num_tests, start, verbose, type="train", scale=1):   #load batch
     return X, y
 
 
-def initTrain():
-    import cityscapesscripts.preparation.createTrainIdLabelImgs
-    import cityscapesscripts.preparation.createTrainIdInstanceImg
-
 
 IMG_SHAPE = (1024, 2048, 3)
 EPOCHS = 20
@@ -172,7 +167,6 @@ with tf.device('device:GPU:1'):
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     with tf.Session(config=config) as sess:
-#     sess_config.gpu_options.allow_growth = True
         model = load_model('unet_140epochs.hdf5', custom_objects={'tversky_loss': tversky_loss})
         sess.run(tf.global_variables_initializer())
         pred = model.predict(x_test, verbose=0)
