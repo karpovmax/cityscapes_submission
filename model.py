@@ -5,6 +5,7 @@ from skimage import data, color
 from skimage.transform import rescale, resize, downscale_local_mean
 import numpy as np
 import cityscapesscripts
+import matplotlib.pyplot as plt
 
 
 
@@ -15,7 +16,7 @@ def getData(num_tests, start, type):
     else:
         cityscapesPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
     searchAnnotated = os.path.join(cityscapesPath, "gtFine", type, "*", "*_gt*_labelTrain*")
-    searchRaw = os.path.join(cityscapesPath,  "*", "*.png")
+    searchRaw = os.path.join(cityscapesPath,  "leftImg8bit", type, "berlin", "*")
 
     #if not searchAnnotated:
     #    printError("Did not find any annotated files.")
@@ -25,9 +26,8 @@ def getData(num_tests, start, type):
     filesAnnotated.sort()
     filesRaw.sort()
     #print (len(filesAnnotated))
-
-
     return [], filesRaw[start:start+num_tests]
+
 def UpscaleImg(img,scale, dims):
     if dims:
         new_img = np.zeros((img.shape[0]*scale,img.shape[1]*scale,3))
@@ -41,11 +41,9 @@ def UpscaleImg(img,scale, dims):
                 new_img[i * scale:(i + 1) * scale, j * scale:(j + 1) * scale] = img[i, j]
     return new_img
 
-def importBatch(num_tests, start, verbose, type="train", scale = 0):   #load batch of data from train dataset
+def importBatch(num_tests, start, verbose, type="train", scale=1):   #load batch of data from train dataset
 
     y_files, X_files = getData(num_tests,start, type)
-
-
     X_input = []
     y_input = []
    # if type=='val':
@@ -163,20 +161,24 @@ def eval_model(model):
     score = eval_preds(new_x, y_val)
     return score
 
-
-
+#xTest = "../rvygon_data"
+#output_dir = "output"
 xTest, output_dir = sys.argv[1:]
 os.environ['CITYSCAPES_DATASET'] = xTest
-x_test, yyyyyy, filenames = importBatch(500, 0, 0, 'test', 1)
-#y_test = to_categorical(x_test)
+x_test, yyyyyy, filenames = importBatch(10, 0, 0, 'test', 1)
+
 x_test = x_test.astype('uint8')
-x_test = x_test.astype('uint8')
-
-
-model = load_model('unet_140epochs.hdf5', custom_objects={'tversky_loss': tversky_loss})
-
-pred = model.predict(x_test, verbose=0)
-pred = np.argmax(pred,axis=3).astype(int)
-for i in range(len(filenames)):
-    impath = os.path.join(output_dir,filenames[i].split('/')[-1]+'.png')
-    imsave(impath, pred[i])
+with tf.device('device:GPU:1'):
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    with tf.Session(config=config) as sess:
+#     sess_config.gpu_options.allow_growth = True
+        model = load_model('unet_140epochs.hdf5', custom_objects={'tversky_loss': tversky_loss})
+        sess.run(tf.global_variables_initializer())
+        pred = model.predict(x_test, verbose=0)
+        pred = np.argmax(pred,axis=3).astype(int)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        for i in range(len(filenames)):
+            impath = os.path.join(output_dir, filenames[i].split('/')[-1]+'_gtFine_labelTrainIds.png')
+            plt.imsave(impath, pred[i])
