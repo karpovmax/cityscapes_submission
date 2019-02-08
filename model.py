@@ -7,6 +7,7 @@ import numpy as np
 import cityscapesscripts
 
 
+
 def getData(num_tests, start, type):
 
     if 'CITYSCAPES_DATASET' in os.environ:
