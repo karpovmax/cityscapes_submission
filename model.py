@@ -15,7 +15,7 @@ def getData(num_tests, start, type):
     else:
         cityscapesPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
     searchAnnotated = os.path.join(cityscapesPath, "gtFine", type, "*", "*_gt*_labelTrain*")
-    searchRaw = os.path.join(cityscapesPath,  "leftImg8bit", type, "berlin", "*")
+    searchRaw = os.path.join(cityscapesPath, "*", "*")
 
     #if not searchAnnotated:
     #    printError("Did not find any annotated files.")
