@@ -160,7 +160,7 @@ def eval_model(model):
 output_dir = "res"
 xTest, output_dir = sys.argv[1:]
 os.environ['CITYSCAPES_DATASET'] = xTest
-x_test, yyyyyy, filenames = importBatch(10, 0, 0, 'test', 1)
+x_test, yyyyyy, filenames = importBatch(100, 0, 0, 'test', 1)
 
 x_test = x_test.astype('uint8')
 with tf.device('/cpu:0'): #device:GPU:1
