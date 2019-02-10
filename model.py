@@ -160,7 +160,7 @@ def eval_model(model):
 output_dir = "res"
 xTest, output_dir = sys.argv[1:]
 os.environ['CITYSCAPES_DATASET'] = xTest
-x_test, yyyyyy, filenames = importBatch(10, 0, 0, 'test', 1)
+x_test, yyyyyy, filenames = importBatch(500, 0, 0, 'test', 1)
 
 x_test = x_test.astype('uint8')
 with tf.device('/cpu:0'): #device:GPU:1
@@ -175,4 +175,4 @@ with tf.device('/cpu:0'): #device:GPU:1
             os.makedirs(output_dir)
         for i in range(len(filenames)): 
             impath = os.path.join(output_dir, filenames[i].split('/')[-1]+'_gtFine_labelTrainIds.png')
-            plt.imsave(impath, pred[i])
+            imsave(impath, pred[i])
