@@ -173,6 +173,6 @@ with tf.device('/cpu:0'): #device:GPU:1
         pred = np.argmax(pred,axis=3).astype(int)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        for i in range(len(filenames)):
+        for i in range(len(filenames)): 
             impath = os.path.join(output_dir, filenames[i].split('/')[-1]+'_gtFine_labelTrainIds.png')
             plt.imsave(impath, pred[i])
