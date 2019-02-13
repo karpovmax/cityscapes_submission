@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from __future__ import print_function, absolute_import, division 
 import os, glob, sys
-from skimage.io import imread, imshow, imsave
+from skimage.io import imread, imshow, imsave 
 from skimage import data, color
 from skimage.transform import rescale, resize, downscale_local_mean
 import numpy as np
